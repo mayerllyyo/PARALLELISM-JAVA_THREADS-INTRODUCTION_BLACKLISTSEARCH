@@ -231,5 +231,38 @@ public class HostBlackListsValidator {
     private static final Logger LOG = Logger.getLogger(HostBlackListsValidator.class.getName());
 }
 ```
+**Part II.I**
+
+The previously implemented parallelism strategy is inefficient in certain cases, as the search continues even when the N threads (together) have already found the minimum number of required occurrences to report to the server as malicious. How could the implementation be modified to minimize the number of queries in these cases? What new element would this bring to the problem?
+
+#### Here, the use of interrupts is very useful. When a thread reaches the threshold, the others are interrupted to avoid calculations after the blocking condition is over.
+
+#### In BlackListCheckerThread, an atomic boolean was added and used in this way:
+```java
+@Override
+    public void run() {
+        for (int i = start; i < end && !stopFlag.get(); i++) {
+            if (skds.isInBlackListServer(i, ipAddress)) {
+                sharedOccurrences.add(i);
+                int current = totalOcurrences.incrementAndGet();
+                if (current >= HostBlackListsValidator.BLACK_LIST_ALARM_COUNT) {
+                    stopFlag.set(true);
+                    break;
+                }
+            }
+        }
+    }
+}
+
+```
+
+#### And in this way in HostBlackListValidator
+
+```java
+AtomicBoolean stopFlag = new AtomicBoolean(false);  
+Runnable task = new BlackListCheckerThread(threadStart, threadEnd, ipaddress,
+blackListOccurrences, totalOcurrences, stopFlag);
+```
+
 
 
