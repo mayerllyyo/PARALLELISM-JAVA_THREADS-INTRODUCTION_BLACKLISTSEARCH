@@ -11,6 +11,7 @@ import edu.eci.arsw.threads.BlackListCheckerThread;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,7 +47,6 @@ public class HostBlackListsValidator {
         int threadReminder = totalServers % numThread;
     
         int start = 0;
-    
         for (int i = 0; i < numThread; i++) {
             int end = start + serverPerThread;
             if (i < threadReminder) {
@@ -55,12 +55,12 @@ public class HostBlackListsValidator {
     
             int threadStart = start;
             int threadEnd = end;
-    
-            Runnable task = new BlackListCheckerThread(threadStart, threadEnd, ipaddress, blackListOccurrences, totalOcurrences);
-            Thread thread = new Thread(task);
-            thread.start();
 
-    
+            AtomicBoolean stopFlag = new AtomicBoolean(false);  
+            Runnable task = new BlackListCheckerThread(threadStart, threadEnd, ipaddress,
+                               blackListOccurrences, totalOcurrences, stopFlag);
+
+            Thread thread = new Thread(task);
             threads.add(thread);
             thread.start();
             start = end;
@@ -85,13 +85,6 @@ public class HostBlackListsValidator {
     
         return blackListOccurrences;
     }
-    
 
-
-    
-    
     private static final Logger LOG = Logger.getLogger(HostBlackListsValidator.class.getName());
-    
-    
-    
 }
