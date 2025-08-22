@@ -3,7 +3,7 @@ package edu.eci.arsw.threads;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import edu.eci.arsw.blacklistvalidator.*;
-import edu.eci.arsw.spamkeywordsdatasource.
+import edu.eci.arsw.spamkeywordsdatasource.HostBlacklistsDataSourceFacade;
 
 public class BlackListCheckerThread implements Runnable {
     private int start;
@@ -11,7 +11,7 @@ public class BlackListCheckerThread implements Runnable {
     private String ipAddress;
     private List<Integer> sharedOccurrences;
     private AtomicInteger totalOcurrences;
-
+    private HostBlacklistsDataSourceFacade skds;
 
     public BlackListCheckerThread(int start, int end, String ipAddress,
                                 List<Integer> sharedOccurrences, AtomicInteger totalOcurrences) {

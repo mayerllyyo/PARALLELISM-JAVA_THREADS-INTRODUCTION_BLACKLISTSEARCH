@@ -11,7 +11,7 @@ This exercise contains an introduction to threaded programming in Java, as well 
 - **Mayerlly Suárez Correa** [mayerllyyo](https://github.com/mayerllyyo)
 
 
-#**Part I - Introduction to Threads in Java**
+**Part I - Introduction to Threads in Java**
 
 1. CountThread Class
 
@@ -19,18 +19,26 @@ This exercise contains an introduction to threaded programming in Java, as well 
 
     ```java
     public class CountThread extends Thread {
-        private int startNum, endNum;
+        private int num1, num2;
 
-        public CountThread(int startNum, int endNum) {
-            this.startNum = startNum;
-            this.endNum = endNum;
+        public CountThread(int num1, int num2) {
+            this.num1 = num1;
+            this.num2 = num2;
+        }
+
+        public void printNumbers(int num1, int num2) {
+            System.out.printf("num1 = %d, num2 = %d%n", num1, num2);
         }
 
         @Override
         public void run() {
-            for (int i = startNum; i <= endNum; i++) {
-                System.out.printf("Thread %s: %d%n", 
-                    Thread.currentThread().getName(), i);
+            for (int i = num1; i <= num2; i++) {
+                System.out.printf("Hilo %s: %d%n", Thread.currentThread().getName(), i);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    System.out.println("El hilo fue interrumpido.");
+                }
             }
         }
     }
@@ -94,3 +102,5 @@ This exercise contains an introduction to threaded programming in Java, as well 
     - **run()**: Simply calls the method directly in the current thread (main thread)
 
     The start() method is the proper way to begin thread execution, while calling run() directly defeats the purpose of multithreading
+
+**Part II - Introduction to Threads in Java**

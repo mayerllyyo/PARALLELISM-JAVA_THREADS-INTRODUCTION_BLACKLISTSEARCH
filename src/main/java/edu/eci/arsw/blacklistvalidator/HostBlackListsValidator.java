@@ -58,9 +58,7 @@ public class HostBlackListsValidator {
     
             Runnable task = new BlackListCheckerThread(threadStart, threadEnd, ipaddress, blackListOccurrences, totalOcurrences);
             Thread thread = new Thread(task);
-            thread.start();
 
-    
             threads.add(thread);
             thread.start();
             start = end;
