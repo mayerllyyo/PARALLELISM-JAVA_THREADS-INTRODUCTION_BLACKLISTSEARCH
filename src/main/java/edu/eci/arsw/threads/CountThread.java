@@ -8,10 +8,8 @@ package edu.eci.arsw.threads;
 /**
  * CountThread class that extends Thread to create a thread that prints numbers
  * within a specified range from num1 to num2.
- * 
  */
 public class CountThread extends Thread {
-
     private int num1, num2;
 
     /**
@@ -26,7 +24,6 @@ public class CountThread extends Thread {
     }
 
     /**
-     * 
      * Utility method to print the range boundaries
      * This method displays the initial and final values of the counting range
      * 
@@ -35,14 +32,10 @@ public class CountThread extends Thread {
      */
     public void printNumbers(int num1, int num2) {
         System.out.printf("num1 = %d, num2 = %d%n", num1, num2);
-
-        
     }
 
     /**
-     * 
      * Runs the thread: prints numbers from num1 to num2 with thread name
-     * 
      */
     @Override
     public void run() {
