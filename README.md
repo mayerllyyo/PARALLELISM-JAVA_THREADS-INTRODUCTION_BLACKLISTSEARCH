@@ -264,5 +264,55 @@ Runnable task = new BlackListCheckerThread(threadStart, threadEnd, ipaddress,
 blackListOccurrences, totalOcurrences, stopFlag);
 ```
 
+**Part III - Performance Evaluation**
 
+Based on the above, implement the following sequence of experiments to validate dispersed IP addresses (for example, 202.24.34.55), recording their execution times (make sure to run them on the same machine):
 
+Single thread.
+As many threads as processing cores (have the program determine this using the Runtime API).
+As many threads as twice the number of processing cores.
+50 threads.
+100 threads.
+When starting the program, run the jVisualVM monitor. As the tests run, review and record the CPU and memory usage in each case.
+
+Using the above, and the given execution times, plot the solution time versus the number of threads. Analyze and formulate hypotheses with your partner for the following questions (you can consider what jVisualVM reports)
+
+#### We created the class to experiment with monitoring
+
+```java
+
+public class ExperimentRunner {
+    public static void main(String[] args) {
+        String ip = "202.24.34.55";
+        int cores = Runtime.getRuntime().availableProcessors();
+        int[] threadCounts = {1, cores, cores * 2, 50, 100};
+
+        System.out.println("Validación de IP: " + ip);
+        System.out.println("Núcleos detectados: " + cores);
+        System.out.println("========================================");
+        System.out.printf("%-15s %-20s\n", "Hilos", "Tiempo (ms)");
+        System.out.println("----------------------------------------");
+
+        for (int threads : threadCounts) {
+            HostBlackListsValidator validator = new HostBlackListsValidator();
+            long start = System.currentTimeMillis();
+            validator.checkHost(ip, threads);
+            long end = System.currentTimeMillis();
+            System.out.printf("%-15d %-20d\n", threads, (end - start));
+        }
+    }
+}
+
+```
+
+#### This was the monitoring observed:
+
+![image](img/monitoreo.png)
+![image](img/monitoreo2.png)
+![image](img/monitoreo3.png)
+
+#### Which gave us this solution time vs threads graph as a result
+
+![image](img/GráficoTiempoVsHIlos.png)
+
+#### The conclusion we draw is that as the number of threads increases, the solution time decreases, but this tends to an asymptote, so when a certain number of threads is reached, increasing them is no longer as efficient.

@@ -55,7 +55,7 @@ public class HostBlackListsValidator {
     
             int threadStart = start;
             int threadEnd = end;
-<<<<<<< HEAD
+
 
             AtomicBoolean stopFlag = new AtomicBoolean(false);  
             Runnable task = new BlackListCheckerThread(threadStart, threadEnd, ipaddress,
