@@ -11,7 +11,7 @@ This exercise contains an introduction to threaded programming in Java, as well 
 - **Mayerlly Suárez Correa** [mayerllyyo](https://github.com/mayerllyyo)
 
 
-**Part I - Introduction to Threads in Java**
+### **Part I - Introduction to Threads in Java**
 
 1. CountThread Class
 
@@ -103,7 +103,7 @@ This exercise contains an introduction to threaded programming in Java, as well 
 
     The start() method is the proper way to begin thread execution, while calling run() directly defeats the purpose of multithreading
 
-**Part II - Introduction to Threads in Java**
+### **Part II - Introduction to Threads in Java**
 
 For automatic security software, a component is being developed to validate IP addresses against several thousand known blacklists (of malicious hosts) and report those that exist in at least five of these lists. This component is designed according to the following diagram, where: HostBlackListsDataSourceFacade is a class that provides a 'facade' for querying any of the N registered blacklists (method 'isInBlacklistServer'), and also allows reporting to a local database when an IP address is considered hazardous. This class is NOT MODIFIABLE, but it is known to be 'Thread-Safe'.
 
@@ -231,7 +231,7 @@ public class HostBlackListsValidator {
     private static final Logger LOG = Logger.getLogger(HostBlackListsValidator.class.getName());
 }
 ```
-**Part II.I**
+### **Part II.I - Optimizing Parallel Search – Discussion**
 
 The previously implemented parallelism strategy is inefficient in certain cases, as the search continues even when the N threads (together) have already found the minimum number of required occurrences to report to the server as malicious. How could the implementation be modified to minimize the number of queries in these cases? What new element would this bring to the problem?
 
@@ -252,8 +252,6 @@ The previously implemented parallelism strategy is inefficient in certain cases,
             }
         }
     }
-}
-
 ```
 
 #### And in this way in HostBlackListValidator
@@ -264,7 +262,7 @@ Runnable task = new BlackListCheckerThread(threadStart, threadEnd, ipaddress,
 blackListOccurrences, totalOcurrences, stopFlag);
 ```
 
-**Part III - Performance Evaluation**
+### **Part III - Performance Evaluation**
 
 Based on the above, implement the following sequence of experiments to validate dispersed IP addresses (for example, 202.24.34.55), recording their execution times (make sure to run them on the same machine):
 
@@ -316,3 +314,17 @@ public class ExperimentRunner {
 ![image](img/GráficoTiempoVsHIlos.png)
 
 #### The conclusion we draw is that as the number of threads increases, the solution time decreases, but this tends to an asymptote, so when a certain number of threads is reached, increasing them is no longer as efficient.
+
+ ### **Part IV – Discussion: Amdahl’s Law**
+ The final section analyzes why performance does not scale linearly with more threads:
+- Why does performance plateau or decrease beyond a certain number of threads (e.g., 500)?
+
+    Execution time decreases rapidly when the number of threads increases from a small baseline, but this improvement diminishes as the thread count grows. The curve eventually stabilizes around 50–100 threads. Beyond this range, adding more threads such as 500 introduces significant overhead in thread creation, scheduling, and synchronization, outweighing the benefits of parallelism. Additionally, Amdahl’s Law emphasizes that a non-parallelizable fraction of the algorithm sets an upper bound on performance. Consequently, performance plateaus and may even worsen with excessive threading.
+
+- How does performance with threads equal to CPU cores compare to using double the cores?
+
+    Using as many threads as physical CPU cores achieves good parallel utilization, but doubling the thread count (e.g., leveraging hyperthreading) still shows noticeable improvements. For example, going from 8 to 16 threads can cut execution time nearly in half from 25,000 ms to 12,000 ms. However, the speedup is not linear. Diminishing returns arise from shared resource contention, context switching, and synchronization overhead. While more threads than cores help to a point, they cannot achieve a perfect 2× scaling.
+
+- How would the results change in a distributed environment across multiple machines?
+
+    Distributing computation across multiple machines eliminates much of the overhead inherent in a single system. Running one thread per machine (e.g., 100 machines with 1 thread each) avoids local contention, context-switching overhead, and CPU-memory competition. The only additional cost is network communication when aggregating results. A hybrid setup—using c threads per machine across 100/c machines—can further optimize performance if c is kept at or below each machine’s optimal thread count. This strategy balances efficient local parallelism with global scalability, achieving better performance than saturating a single machine with hundreds of threads.
